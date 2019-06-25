@@ -21,37 +21,30 @@
 #include "ciff_lin.h"
 
 /*
-		FILE::READ_ENTIRE_FILE()
-		------------------------
-		This uses a combination of "C" FILE I/O and C++ strings in order to copy the contents of a file into an internal buffer.
-		There are many different ways to do this, but this is the fastest according to this link: http://insanecoding.blogspot.co.nz/2011/11/how-to-read-in-file-in-c.html
-		Note that there does not appear to be a way in C++ to avoid the initialisation of the string buffer.
+		READ_ENTIRE_FILE()
+		------------------
+*/
+size_t read_entire_file(const std::string &filename, std::string &into)
+	{
+	FILE *fp;
+	struct stat details;
+	size_t file_length = 0;
 
-		Returns the length of the file in bytes - which is also the size of the string buffer once read.
-	*/
-		size_t read_entire_file(const std::string &filename, std::string &into)
+	if ((fp = fopen(filename.c_str(), "rb")) != nullptr)
 		{
-		FILE *fp;							// "C" pointer to the file
-		struct stat details;				// file system's details of the file
-		size_t file_length = 0;			// length of the file in bytes
-
-		/*
-			Fopen() the file then fstat() it.  The alternative is to stat() then fopen() - but that is wrong because the file might change between the two calls.
-		*/
-		if ((fp = fopen(filename.c_str(), "rb")) != nullptr)
-			{
-			if (fstat(fileno(fp), &details) == 0)
-				if ((file_length = details.st_size) != 0)
-					{
-					into.resize(file_length);
-					if (fread(&into[0], details.st_size, 1, fp) != 1)
-						into.resize(0);
-					}
-			fclose(fp);
-			}
-
-		return file_length;
+		if (fstat(fileno(fp), &details) == 0)
+			if ((file_length = details.st_size) != 0)
+				{
+				into.resize(file_length);
+				if (fread(&into[0], details.st_size, 1, fp) != 1)
+					into.resize(0);
+				}
+		fclose(fp);
 		}
+
+	return file_length;
+	}
+	
 /*
 	MAIN()
 	------
