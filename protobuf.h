@@ -71,6 +71,19 @@ namespace JASS
 						{
 						/* Nothing */
 						}
+
+					/*
+						PROTOBUF::SLICE::CLEAR()
+						------------------------
+					*/
+					/*!
+						@brief Sets the pointer to NULL and the length to 0
+					*/
+					void clear(void)
+						{
+						start = nullptr;
+						length = 0;
+						}
 				} ;
 
 			/*
@@ -108,7 +121,7 @@ namespace JASS
 			*/
 			inline static int64_t un_zigzag(uint64_t bits)
 				{
-				return (int64_t)((bits >> 1) ^ -(bits & 0x1));
+				return (int64_t)(bits >> 1) ^ -((int64_t)(bits & 0x1));
 				}
 
 		public:

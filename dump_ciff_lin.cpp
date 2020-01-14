@@ -14,9 +14,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+
+#ifdef _MSC_VER
+#else
+	#include <unistd.h>
+	#include <sys/stat.h>
+	#include <sys/types.h>
+#endif
 
 #include <iostream>
 
@@ -46,7 +50,7 @@ size_t read_entire_file(const std::string &filename, std::string &into)
 
 	return file_length;
 	}
-	
+
 /*
 	MAIN()
 	------
@@ -67,7 +71,15 @@ int main(int argc, const char *argv[])
 	for (const auto &posting : source)
 		{
 		std::cout.write((char *)posting.term.start, posting.term.length);
-		std::cout << " " << posting.document_frequency << " " << posting.collection_frequency << "\n";
+		std::cout << " " << posting.document_frequency << " " << posting.collection_frequency << ":";
+
+		uint64_t cumulative_total = 0;
+		for (const auto &pair : posting.postings)
+			{
+			cumulative_total += pair.docid;
+			std::cout << "<" << cumulative_total << "," << pair.term_frequency << ">";
+			}
+		std::cout << "\n";
 		}
 	if (source.status == JASS::ciff_lin::FAIL)
 		exit(printf("File is not in the correct format\n"));

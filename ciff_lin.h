@@ -111,8 +111,8 @@ namespace JASS
 					class posting
 						{
 						public:
-							uint32_t docid;					///< The Document identifier (probably d-gap encoded).
-							uint32_t term_frequency;		///< The number of time the term occurs in document with id docid.
+							uint32_t docid;					///< The Document identifier d1-gap encoded.
+							uint32_t term_frequency;		///< The number of times the term occurs in document with id docid.
 						} ;
 
 				public:
@@ -144,9 +144,9 @@ namespace JASS
 								{
 								uint64_t value = protobuf::get_uint64_t(stream);
 								if (field == 1)
-									into.docid = value;
+									into.docid = static_cast<uint32_t>(value);
 								else if (field == 2)
-									into.term_frequency = value;
+									into.term_frequency = static_cast<uint32_t>(value);
 								else
 									return FAIL;
 								}
@@ -206,6 +206,21 @@ namespace JASS
 							}
 						return OK;
 						}
+
+				/*
+					CIFF_LIN::POSTINGS_LIST::CLEAR()
+					--------------------------------
+				*/
+				/*!
+					@brief removes all content from the postings list
+				*/
+				void clear(void)
+					{
+					term.clear();
+					document_frequency = 0;
+					collection_frequency = 0;
+					postings.clear();
+					}
 				} ;
 				
 		private:
@@ -254,6 +269,7 @@ namespace JASS
 						{
 						int64_t postings_list_length = protobuf::get_uint64_t(stream);
 
+						postings.clear();
 						if (postings_list::get_next_postings(postings, stream, stream + postings_list_length) == FAIL)
 							{
 							/*
