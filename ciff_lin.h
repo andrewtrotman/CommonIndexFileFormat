@@ -113,6 +113,15 @@ namespace JASS
 						public:
 							uint32_t docid;					///< The Document identifier d1-gap encoded.
 							uint32_t term_frequency;		///< The number of times the term occurs in document with id docid.
+						public:
+							posting() : 
+								docid(0),
+								term_frequency(0)
+								{
+								/*
+									Nothing
+								*/
+								}
 						} ;
 
 				public:
